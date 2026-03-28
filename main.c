@@ -1,6 +1,6 @@
-#include "clogger/clogger.h"
 #include "getMouse.h"
 #include <stdbool.h>
+#include <stdio.h>
 
 int main()
 {
@@ -24,13 +24,13 @@ int main()
             {
                 if(ev.type == EV_KEY && ev.code == BTN_MIDDLE && ev.value == 1 && !isActive)
                 {
-                    cclogg(logPath, GREEN, "ENABLE", "Autoscroll enabled", false);
+                    printf("Autoscroll enabled\n");
                     fflush(stdout);
                     isActive = true;
                 }
                 else if (ev.type == EV_KEY && ev.code == BTN_MIDDLE && ev.value == 1 && isActive)
                 {
-                    cclogg(logPath, RED, "DISABLE", "Autoscroll disabled", false);
+                    printf("Autoscroll disabled\n");
                     fflush(stdout);
                     isActive = false;
                 }

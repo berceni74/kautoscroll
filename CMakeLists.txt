@@ -6,7 +6,6 @@ pkg_check_modules(EVDEV REQUIRED libevdev)
 
 add_executable(kautoscroll
     main.c
-    clogger/clogger.c
     getMouse.c
 )
 
