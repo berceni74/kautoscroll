@@ -1,4 +1,4 @@
-#include "getMouse.h"
+#include "virtMouse.h"
 
 struct libevdev_uinput *virtMouse()
 {

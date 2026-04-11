@@ -8,6 +8,7 @@ add_executable(kautoscroll
     main.c
     getMouse.c
     virtMouse.c
+    getCtrl.c
 )
 
 target_link_libraries(kautoscroll PRIVATE ${EVDEV_LINK_LIBRARIES})

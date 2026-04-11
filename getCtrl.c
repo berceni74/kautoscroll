@@ -1,6 +1,6 @@
-#include "getMouse.h"
+#include "getCtrl.h"
 
-char *getMouse()
+char *getCtrl()
 {
     DIR *dirp = opendir("/dev/input");
     struct dirent *file;
@@ -18,7 +18,7 @@ char *getMouse()
                 
                 libevdev_new_from_fd(fd, &dev);
 
-                if (libevdev_has_event_code(dev, EV_KEY, BTN_MIDDLE))
+                if (libevdev_has_event_code(dev, EV_KEY, KEY_RIGHTCTRL))
                 {
                     libevdev_free(dev);
                     close(fd);
