@@ -28,8 +28,6 @@ int main()
 
     if(mouse && ctrl)
     {
-        printf("mouse: %s\n", mouse);
-        printf("ctrl: %s\n", ctrl);
         int fd = open(mouse, O_RDONLY);
         int kfd = open(ctrl, O_RDONLY);
 
@@ -43,65 +41,65 @@ int main()
         libevdev_new_from_fd(fd, &dev);
         libevdev_new_from_fd(kfd, &kdev);
 
+        const char *mouseName = libevdev_get_name(dev);
+        const char *keyboardName = libevdev_get_name(kdev);
+        printf("mouse: %s; device: %s\n", mouse, mouseName);
+        printf("ctrl: %s; device: %s\n", ctrl, keyboardName);
+
         while (1) 
         {
-            poll(fds, 2, -1); // -1 wait forever
-
             fflush(stdout);
-
-            if(fds[1].revents & POLLIN)
-            {
-                while(libevdev_next_event(kdev, LIBEVDEV_READ_FLAG_BLOCKING, &kev) >= 0)
-                {
-                    printf("hello world2");
-                    if(kev.code == KEY_LEFTCTRL || kev.code == KEY_RIGHTCTRL)
-                    {
-                        if(kev.value == 1)
-                        {
-                            ctrlHold = 1;
-                        }
-
-                        if (kev.type == EV_KEY && (kev.code == KEY_LEFTCTRL || kev.code == KEY_RIGHTCTRL) && kev.value == 0)
-                        {
-                            ctrlHold = 0;
-                        }
-
-                        printf("%d \n", ctrlHold);
-                    }
-                }
-            }
             
-            if(fds[0].revents & POLLIN)
-            {
-                while(libevdev_next_event(dev, LIBEVDEV_READ_FLAG_NORMAL, &ev) >= 0)
-                {
-                    // printf("hello world");
-                    if(ev.type == EV_KEY && ev.code == BTN_MIDDLE && ctrlHold == 1)
-                    {
-                        printf("Autoscroll enabled\n");
-                        
-                        isActive = true;
-                        if(isActive)
-                        {
-                            while(libevdev_next_event(dev, LIBEVDEV_READ_FLAG_NORMAL, &ev) >= 0)
-                            {
-                                if(ev.type == EV_REL && ev.code == REL_Y)
-                                {
-                                    printf("Scrolling... ; Value: %d\n", -ev.value);
+            // while(libevdev_next_event(kdev, LIBEVDEV_READ_FLAG_NORMAL, &kev) >= 0)
+            // {
+            //     printf("hello world2");
+            //     if(kev.code == KEY_LEFTCTRL || kev.code == KEY_RIGHTCTRL)
+            //     {
+            //         if(kev.value == 1)
+            //         {
+            //             ctrlHold = 1;
+            //         }
 
-                                    libevdev_uinput_write_event(virt, EV_REL, REL_WHEEL, -ev.value);
-                                    libevdev_uinput_write_event(virt, EV_SYN, SYN_REPORT, 0);
-                                }
-                                if (ev.type == EV_KEY && ev.code == BTN_MIDDLE && ev.value == 1 && isActive)
-                                {
-                                    printf("Autoscroll disabled\n");
-                                    isActive = false;
-                                }
+            //         if (kev.type == EV_KEY && (kev.code == KEY_LEFTCTRL || kev.code == KEY_RIGHTCTRL) && kev.value == 0)
+            //         {
+            //             ctrlHold = 0;
+            //         }
+
+            //         printf("%d \n", ctrlHold);
+            //     }
+            // }
+             
+            while(libevdev_next_event(dev, LIBEVDEV_READ_FLAG_NORMAL, &ev) >= 0)
+            {
+                printf("hello world");
+                if(ev.type == EV_KEY && ev.code == BTN_MIDDLE && ctrlHold == 1)
+                {
+                    printf("Autoscroll enabled\n");
+                    
+                    isActive = true;
+                    while(isActive)
+                    {
+                        while(libevdev_next_event(dev, LIBEVDEV_READ_FLAG_NORMAL, &ev) >= 0)
+                        {
+                            if(ev.type == EV_REL && ev.code == REL_Y)
+                            {
+                                printf("Scrolling... ; Value: %d\n", -ev.value);
+
+                                libevdev_uinput_write_event(virt, EV_REL, REL_WHEEL, -ev.value);
+                                libevdev_uinput_write_event(virt, EV_SYN, SYN_REPORT, 0);
+                            }
+                            if (ev.type == EV_KEY && ev.code == BTN_MIDDLE && ev.value == 1 && isActive)
+                            {
+                                printf("Autoscroll disabled\n");
+                                isActive = false;
+                                break;
                             }
                         }
-                    } 
-                }
+                    }
+                } 
             }
+                
+            
         }
         libevdev_uinput_destroy(virt);
         libevdev_free(dev);
