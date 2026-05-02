@@ -69,15 +69,14 @@ int main()
             //     }
             // }
              
-            while(libevdev_next_event(dev, LIBEVDEV_READ_FLAG_NORMAL, &ev) >= 0)
+            if(libevdev_next_event(dev, LIBEVDEV_READ_FLAG_NORMAL, &ev) >= 0)
             {
-                printf("hello world");
-                if(ev.type == EV_KEY && ev.code == BTN_MIDDLE && ctrlHold == 1)
+                if(ev.type == EV_KEY && ev.code == BTN_MIDDLE && ev.value == 1)
                 {
                     printf("Autoscroll enabled\n");
                     
                     isActive = true;
-                    while(isActive)
+                    if(isActive)
                     {
                         while(libevdev_next_event(dev, LIBEVDEV_READ_FLAG_NORMAL, &ev) >= 0)
                         {
@@ -97,9 +96,7 @@ int main()
                         }
                     }
                 } 
-            }
-                
-            
+            }  
         }
         libevdev_uinput_destroy(virt);
         libevdev_free(dev);
